@@ -1,6 +1,9 @@
 import { Fugaz_One, Open_Sans, Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
+import Head from "./head";
+import Logout from "@/components/Logout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,14 +24,13 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  
   const header = (
     <header className="p-4 sm:p-8 flex items-center justify-between gap-4">
       <Link href="/">
         <h1 className={'text-base sm:text-lg textGradient ' + fugaz.className}>WSEI Next.js App</h1>
       </Link>
-      <div className="flex items-center justify-between">
-        PLACEHOLDER
-      </div>
+      <Logout />
     </header>
   );
 
@@ -41,11 +43,14 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={'w-full max-w-[1000px] mx-auto text-sm ms:text-base min-h-screen flex flex-col text-slate-800 antialiased ' + opensans.className}>
-        {header}
-        {children}
-        {footer}
-      </body>
+      <Head />
+      <AuthProvider>
+        <body className={'w-full max-w-[1000px] mx-auto text-sm ms:text-base min-h-screen flex flex-col text-slate-800 antialiased ' + opensans.className}>
+          {header}
+          {children}
+          {footer}
+        </body>
+      </AuthProvider>
     </html>
   );
 }
