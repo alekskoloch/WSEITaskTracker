@@ -19,10 +19,12 @@ const days = [
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 ];
 
-export default function Calendar() {
+export default function Calendar({ completeData }) {
     const { currentUser } = useAuth(); // Pobierz zalogowanego użytkownika z kontekstu
     const now = new Date();
     const currentMonth = now.getMonth();
+
+    
 
     const [selectedMonth, setSelectMonth] = useState(months[currentMonth]);
     const [selectedYear, setSelectedYear] = useState(now.getFullYear());
@@ -32,6 +34,14 @@ export default function Calendar() {
 
     const numericMonth = months.indexOf(selectedMonth);
     const data = {}; // Placeholder na dane miesięczne (zastąp własnymi)
+
+    const tasks = completeData?.tasks || {};
+    Object.keys(tasks).forEach((taskDate) => {
+        const [year, month, day] = taskDate.split('-');
+        if (year == selectedYear && month == numericMonth + 1) {
+            data[day] = tasks[taskDate].length;
+        }
+    });
 
     function handleIncrementMonth(val) {
         if (numericMonth + val < 0) {
