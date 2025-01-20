@@ -12,7 +12,7 @@ const fugaz = Fugaz_One({ subsets: ['latin'], weight: ['400'] });
 
 export default function Dashboard() {
     const { currentUser, loading } = useAuth();
-    const [tasks, setTasks] = useState(null); // Taski na dzisiejszy dzień
+    const [tasks, setTasks] = useState(null);
     const [userDataObj, setUserDataObj] = useState({});
     const now = new Date();
     const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
@@ -29,7 +29,6 @@ export default function Dashboard() {
                     const userData = docSnapshot.data();
                     setUserDataObj(userData);
 
-                    // Pobierz taski na dzisiejszy dzień
                     const dailyTasks = userData?.tasks?.[todayKey] || [];
                     setTasks(dailyTasks.length > 0 ? dailyTasks : null);
                 }

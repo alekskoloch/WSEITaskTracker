@@ -1,12 +1,14 @@
 'use client';
 import { Newsreader } from 'next/font/google';
 import { gradients } from '@/utils/gradients';
-import { baseTaskNumbers, demoData } from '@/utils/data';
+import { baseTaskNumbers } from '@/utils/data';
 import React, { useState } from 'react';
 import { Fugaz_One } from 'next/font/google';
-import { useAuth } from '@/context/AuthContext'; // Dodano użycie AuthContext
+import { useAuth } from '@/context/AuthContext';
 import { db } from '@/firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 const fugaz = Fugaz_One({ subsets: ["latin"], weight: ['400'] });
 
@@ -20,28 +22,37 @@ const days = [
 ];
 
 export default function Calendar({ completeData }) {
-    const { currentUser } = useAuth(); // Pobierz zalogowanego użytkownika z kontekstu
+    const { currentUser } = useAuth();
     const now = new Date();
     const currentMonth = now.getMonth();
 
-    
-
     const [selectedMonth, setSelectMonth] = useState(months[currentMonth]);
     const [selectedYear, setSelectedYear] = useState(now.getFullYear());
-    const [selectedDay, setSelectedDay] = useState(null); // Dzień wybrany do dodania zadania
-    const [taskModalVisible, setTaskModalVisible] = useState(false); // Widoczność formularza
-    const [taskDetails, setTaskDetails] = useState({ title: "", description: "", status: "To Do" }); // Dane zadania
+    const [selectedDay, setSelectedDay] = useState(null);
+    const [taskModalVisible, setTaskModalVisible] = useState(false); 
+    const [taskDetails, setTaskDetails] = useState({ title: "", description: "", status: "To Do" });
+
+    let isDemo = false;
 
     const numericMonth = months.indexOf(selectedMonth);
-    const data = {}; // Placeholder na dane miesięczne (zastąp własnymi)
+    let data = {};
 
-    const tasks = completeData?.tasks || {};
-    Object.keys(tasks).forEach((taskDate) => {
-        const [year, month, day] = taskDate.split('-');
-        if (year == selectedYear && month == numericMonth + 1) {
-            data[day] = tasks[taskDate].length;
-        }
-    });
+    const pathname = usePathname();
+    if (pathname === '/') {
+        data = baseTaskNumbers;
+        isDemo = true;
+    }
+    else {
+        const tasks = completeData?.tasks || {};
+        Object.keys(tasks).forEach((taskDate) => {
+            const [year, month, day] = taskDate.split('-');
+            if (year == selectedYear && month == numericMonth + 1) {
+                data[day] = tasks[taskDate].length;
+            }
+        });
+    }
+
+    
 
     function handleIncrementMonth(val) {
         if (numericMonth + val < 0) {
@@ -125,10 +136,11 @@ export default function Calendar({ completeData }) {
                                 <div
                                     key={dayOfWeekIndex}
                                     style={{ background: color }}
-                                    className={`text-xs sm:text-sm border border-solid p-2 flex items-center gap-2 justify-between rounded-lg duration-200 transform hover:scale-105 cursor-pointer ${
+                                    className={`text-xs sm:text-sm border border-solid p-2 flex items-center gap-2 justify-between rounded-lg duration-200 transform hover:scale-105 ${
                                         isToday ? 'border-indigo-400' : 'border-indigo-100'
-                                    } ${color === 'white' ? 'text-indigo-400' : ''}`}
+                                    } ${color === 'white' ? 'text-indigo-400' : ''} ${(isDemo ? '' : 'cursor-pointer')}`}
                                     onClick={() => {
+                                        if (isDemo) return;
                                         setSelectedDay(dayIndex);
                                         setTaskModalVisible(true);
                                     }}
