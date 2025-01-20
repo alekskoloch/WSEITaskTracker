@@ -1,7 +1,7 @@
 'use client'
 import { auth } from '@/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import React, {useContext, useState, useEffect} from 'react'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getDoc } from 'firebase/firestore';
@@ -19,8 +19,17 @@ export function AuthProvider({children}) {
     const [userDataObj, setUserDataObj] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    function signup(email, password) {
-        return createUserWithEmailAndPassword(auth, email, password);
+    async function signup(name, email, password) {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const userRef = doc(db, 'users', user.uid);
+        await setDoc(userRef, {
+            email: email,
+            name: name
+        });
+
+        return user;
     }
 
     function login(email, password) {

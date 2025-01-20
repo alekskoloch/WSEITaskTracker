@@ -102,7 +102,7 @@ export default function Dashboard() {
                 })}
             </div>
             <h4 className={'text-4xl sm:text-5xl md:text-6xl text-center ' + fugaz.className}>
-                Welcome! Here are your <span className='textGradient'>tasks</span> for today:
+                Welcome {userDataObj?.name ? `${userDataObj?.name}` : 'there'}! Here are your <span className='textGradient'>tasks</span> for today:
             </h4>
             <div className='grid grid-cols-1 md:grid-col-5 gap-4'>
                 {Object.keys(tasks).map((task, taskIndex) => {
