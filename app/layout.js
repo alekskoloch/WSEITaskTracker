@@ -19,7 +19,7 @@ const opensans = Open_Sans({ subsets: ["latin"] });
 const fugaz = Fugaz_One({ subsets: ["latin"], weight: ['400'] });
 
 export const metadata = {
-  title: "WSEI · Next.js · Home Page",
+  title: "WSEI · Task Tracker · Home Page",
   description: "Final project from the Frontend Frameworks lab",
 };
 
@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
   const header = (
     <header className="p-4 sm:p-8 flex items-center justify-between gap-4">
       <Link href="/">
-        <h1 className={'text-base sm:text-lg textGradient ' + fugaz.className}>WSEI Next.js App</h1>
+        <h1 className={'text-base sm:text-lg textGradient ' + fugaz.className}>WSEI Task Tracker</h1>
       </Link>
       <Logout />
     </header>

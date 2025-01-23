@@ -4,7 +4,7 @@ import Login from "@/components/Login";
 import Loading from "@/components/Loading";
 
 export const metadata = {
-    title: "WSEI · Next.js · Dashboard",
+    title: "WSEI · Task Tracker · Dashboard",
 };
 
 export default function DashboardPage() {
