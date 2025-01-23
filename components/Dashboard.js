@@ -88,7 +88,7 @@ export default function Dashboard() {
                 ...userDataObj,
                 tasks: {
                     ...userDataObj.tasks,
-                    [todayKey]: updatedTasks,
+                    [currentDate]: updatedTasks,
                 },
             };
             await setDoc(userDoc, updatedData);
