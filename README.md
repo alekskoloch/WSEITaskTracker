@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# WSEI Task Tracker 🚀
 
-First, run the development server:
+**WSEI Task Tracker** is an app designed to help you stay on top of your daily tasks, focusing on tasks for today while still allowing you to view past and future tasks. You can easily add tasks, select their status, add descriptions, and delete tasks as needed.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Once a task is marked as **done**, it will disappear from your daily view but you can toggle its visibility to review what you've accomplished. Completed tasks will be highlighted accordingly.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app offers **email/password** login and optionally allows you to add your name during registration for a personalized greeting. The calendar dynamically adjusts based on the number of tasks planned for each day — the more tasks, the darker the calendar tile. If there are no tasks, the tile will remain white. This approach helps you focus on current tasks without overwhelming details, grounded in psychological principles of minimizing distractions.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Features ✨
 
-## Learn More
+- **Task management:** Add, delete, and update tasks.
+- **Task status:** Easily mark tasks as done, and hide or reveal them later.
+- **Personalized experience:** Add your name at registration for a custom greeting.
+- **Dynamic calendar view:** Darker calendar tiles for busier days, with white tiles for empty days.
+- **Psychological design:** Simplified calendar and task view to minimize distractions and boost focus.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Getting Started 🏁
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To get started, first, clone the repository and set up the project:
 
-## Deploy on Vercel
+1. Clone the repo:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   git clone https://github.com/yourusername/wsei-task-tracker.git
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Install dependencies:
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   # or
+   bun install
+   ```
+
+3. Run the development server:
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   # or
+   bun dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the app!
+
+You can also access the app at [https://wsei-task-tracker.vercel.app/](https://wsei-task-tracker.vercel.app/).
+
+---
+
+### Layout 🖼️
+
+![Layout Screenshot](layout.png)
+
+---
+
+### User Dashboard 🖼️
+
+![Dashboard Screenshot](dashboard.png)
+
+---
+
+### Technologies Used 🔧
+
+- **Next.js** - The React framework for production
+- **Next/font** - Automatically optimizes and loads the Geist font family by Vercel
+
+---
+
+### Editing the Page ✍️
+
+You can start editing the page by modifying `app/page.js`. The page will auto-update as you make changes.
