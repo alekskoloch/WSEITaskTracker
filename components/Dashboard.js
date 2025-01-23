@@ -17,6 +17,7 @@ export default function Dashboard() {
     const [showCompletedTasks, setShowCompletedTasks] = useState(false);
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [currentDate, setCurrentDate] = useState(new Date());
     const now = new Date();
     const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
 
@@ -32,7 +33,8 @@ export default function Dashboard() {
                     const userData = docSnapshot.data();
                     setUserDataObj(userData);
 
-                    const dailyTasks = userData?.tasks?.[todayKey] || [];
+                    const formattedDate = formatDateForKey(currentDate);
+                    const dailyTasks = userData?.tasks?.[formattedDate] || [];
                     setTasks(dailyTasks.length > 0 ? dailyTasks : null);
                 }
             } catch (error) {
@@ -41,7 +43,11 @@ export default function Dashboard() {
         }
 
         fetchTasks();
-    }, [currentUser, todayKey]);
+    }, [currentUser, todayKey, currentDate]);
+
+    const formatDateForKey = (date) => {
+        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    };
 
     const filteredTasks = tasks
     ? tasks.filter((task) => showCompletedTasks || task.status !== 'Done')
@@ -86,6 +92,35 @@ export default function Dashboard() {
         }
     };
 
+    const changeDate = (direction) => {
+        const newDate = new Date(currentDate);
+        if (direction === 'prev') {
+            newDate.setDate(newDate.getDate() - 1);
+        } else if (direction === 'next') {
+            newDate.setDate(newDate.getDate() + 1);
+        }
+        setCurrentDate(newDate);
+    };
+
+    const formatDateDisplay = () => {
+        const today = new Date();
+        if (
+            currentDate.getDate() === today.getDate() &&
+            currentDate.getMonth() === today.getMonth() &&
+            currentDate.getFullYear() === today.getFullYear()
+        ) {
+            return 'Today';
+        } else if (
+            currentDate.getDate() === today.getDate() + 1 &&
+            currentDate.getMonth() === today.getMonth() &&
+            currentDate.getFullYear() === today.getFullYear()
+        ) {
+            return 'Tomorrow';
+        } else {
+            return currentDate.toLocaleDateString();
+        }
+    };
+
     if (loading) {
         return <Loading />;
     }
@@ -107,9 +142,26 @@ export default function Dashboard() {
                     <span className='text-sm sm:text-base'>Show Completed Tasks</span>
                 </label>
             </div>
-            <h4 className={'text-4xl sm:text-5xl md:text-6xl text-center ' + fugaz.className}>
-                Welcome {userDataObj?.name || 'there'}! Here are your <span className='textGradient'>tasks</span> for today:
-            </h4>
+            
+            <div className="flex items-center justify-center gap-6 mb-8">
+                <button
+                    onClick={() => changeDate('prev')}
+                    className="text-indigo-500 text-2xl hover:text-indigo-700"
+                >
+                    &#8592;
+                </button>
+                <h4 className={`text-4xl sm:text-5xl md:text-6xl text-center ${fugaz.className}`}>
+                    Welcome {userDataObj?.name || 'there'}! Here are your{' '}
+                    <span className="textGradient">tasks</span> for{' '}
+                    <span className="font-bold">{formatDateDisplay()}</span>:
+                </h4>
+                <button
+                    onClick={() => changeDate('next')}
+                    className="text-indigo-500 text-2xl hover:text-indigo-700"
+                >
+                    &#8594;
+                </button>
+            </div>
 
             <div className="flex flex-wrap justify-center gap-4 relative">
                 {tasks && tasks.length > 0 ? (
@@ -133,7 +185,7 @@ export default function Dashboard() {
                                     }`}
                                     onClick={() => handleTaskClick(task)}
                                 >
-                                    <p className={'font-medium text-lg ' + fugaz.className}>{task.title}</p>
+                                    <p className={`font-medium text-lg ${fugaz.className}`}>{task.title}</p>
                                     <p className="text-sm">{task.description}</p>
                                     <p className="text-xs">{task.status}</p>
                                 </button>
