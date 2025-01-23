@@ -22,6 +22,13 @@ export default function Dashboard() {
     const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
 
     useEffect(() => {
+        const savedDate = localStorage.getItem('currentDate');
+        if (savedDate) {
+            setCurrentDate(new Date(savedDate));
+        }
+    }, []);
+
+    useEffect(() => {
         if (!currentUser) return;
 
         async function fetchTasks() {
@@ -43,7 +50,7 @@ export default function Dashboard() {
         }
 
         fetchTasks();
-    }, [currentUser, todayKey, currentDate]);
+    }, [currentUser, currentDate]);
 
     const formatDateForKey = (date) => {
         return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
@@ -131,7 +138,7 @@ export default function Dashboard() {
 
     return (
         <div className='flex flex-col flex-1 gap-4 sm:gap-8 md:gap-12'>
-            <div className='grid grid-cols-1 bg-indigo-50 text-indigo-500 rounded-lg p-4'>
+            <div className='flex items-center justify-between bg-indigo-50 text-indigo-500 rounded-lg p-4'>
                 <label className='flex items-center gap-2'>
                     <input
                         type="checkbox"
@@ -141,6 +148,17 @@ export default function Dashboard() {
                     />
                     <span className='text-sm sm:text-base'>Show Completed Tasks</span>
                 </label>
+
+                <button
+                    onClick={() => {
+                        const today = new Date();
+                        setCurrentDate(today);
+                        localStorage.setItem('selectedDate', today.toISOString());
+                    }}
+                    className="px-3 py-1 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-all text-sm"
+                >
+                    Go Today
+                </button>
             </div>
             
             <div className="flex items-center justify-center gap-6 mb-8">
