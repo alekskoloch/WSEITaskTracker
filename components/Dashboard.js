@@ -56,6 +56,26 @@ export default function Dashboard() {
         return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     };
 
+    async function refreshTasks() {
+        if (!currentUser) return;
+    
+        try {
+            const userDoc = doc(db, "users", currentUser.uid);
+            const docSnapshot = await getDoc(userDoc);
+    
+            if (docSnapshot.exists()) {
+                const userData = docSnapshot.data();
+                setUserDataObj(userData);
+    
+                const formattedDate = formatDateForKey(currentDate);
+                const dailyTasks = userData?.tasks?.[formattedDate] || [];
+                setTasks(dailyTasks.length > 0 ? dailyTasks : null);
+            }
+        } catch (error) {
+            console.error("Error refreshing tasks: ", error);
+        }
+    }
+
     const filteredTasks = tasks
     ? tasks.filter((task) => showCompletedTasks || task.status !== 'Done')
     : null;
@@ -217,7 +237,7 @@ export default function Dashboard() {
                 )}
             </div>
 
-            <Calendar completeData={userDataObj} handleSetTasks={() => {}} />
+            <Calendar completeData={userDataObj} refreshTasks={refreshTasks} handleSetTasks={() => {}} />
 
             {taskModalVisible && selectedTask && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

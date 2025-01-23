@@ -21,7 +21,7 @@ const days = [
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 ];
 
-export default function Calendar({ completeData }) {
+export default function Calendar({ completeData, refreshTasks  }) {
     const { currentUser } = useAuth();
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -93,6 +93,7 @@ export default function Calendar({ completeData }) {
                     createdAt: new Date().toISOString(),
                 }),
             });
+            refreshTasks();
             setTaskModalVisible(false);
             setTaskDetails({ title: "", description: "", status: "To Do" });
         } catch (error) {
