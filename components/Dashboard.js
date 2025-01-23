@@ -14,6 +14,7 @@ export default function Dashboard() {
     const { currentUser, loading } = useAuth();
     const [tasks, setTasks] = useState(null);
     const [userDataObj, setUserDataObj] = useState({});
+    const [showCompletedTasks, setShowCompletedTasks] = useState(false);
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const now = new Date();
@@ -41,6 +42,14 @@ export default function Dashboard() {
 
         fetchTasks();
     }, [currentUser, todayKey]);
+
+    const filteredTasks = tasks
+    ? tasks.filter((task) => showCompletedTasks || task.status !== 'Done')
+    : null;
+
+    const toggleShowCompletedTasks = () => {
+        setShowCompletedTasks((prev) => !prev);
+    };
 
     const handleTaskClick = (task) => {
         setSelectedTask(task);
@@ -87,40 +96,52 @@ export default function Dashboard() {
 
     return (
         <div className='flex flex-col flex-1 gap-4 sm:gap-8 md:gap-12'>
-            <div className='grid grid-cols-3 bg-indigo-50 text-indigo-500 rounded-lg'>
-                {['num_days', 'time_remaining', 'date'].map((status, statusIndex) => (
-                    <div key={statusIndex} className='p-4 flex flex-col gap-1 sm:gap-2'>
-                        <p className='font-medium uppercase text-xs sm:text-sm'>
-                            {status.replaceAll('_', ' ')}
-                        </p>
-                        <p className={'text-base sm:text-lg ' + fugaz.className}>
-                            {status === 'num_days' ? '14' : status === 'time_remaining' ? '12:13:14' : new Date().toDateString()}
-                        </p>
-                    </div>
-                ))}
+            <div className='grid grid-cols-1 bg-indigo-50 text-indigo-500 rounded-lg p-4'>
+                <label className='flex items-center gap-2'>
+                    <input
+                        type="checkbox"
+                        checked={showCompletedTasks}
+                        onChange={toggleShowCompletedTasks}
+                        className='w-4 h-4 accent-indigo-500'
+                    />
+                    <span className='text-sm sm:text-base'>Show Completed Tasks</span>
+                </label>
             </div>
             <h4 className={'text-4xl sm:text-5xl md:text-6xl text-center ' + fugaz.className}>
                 Welcome {userDataObj?.name || 'there'}! Here are your <span className='textGradient'>tasks</span> for today:
             </h4>
 
-            <div className='flex flex-wrap justify-center gap-4'>
+            <div className="flex flex-wrap justify-center gap-4 relative">
                 {tasks && tasks.length > 0 ? (
-                    tasks.map((task, index) => (
-                        <div key={index} className='flex justify-center w-full sm:w-auto max-w-[300px]'>
-                            <button
-                                className='p-4 bg-indigo-50 text-indigo-500 rounded-lg purpleShadow duration-200 hover:bg-[lavender] w-full'
-                                onClick={() => handleTaskClick(task)}
+                    tasks.map((task, index) => {
+                        const isVisible = showCompletedTasks || task.status !== 'Done';
+
+                        return (
+                            <div
+                                key={index}
+                                className={`flex justify-center w-full sm:w-auto max-w-[300px] ${
+                                    isVisible
+                                        ? 'opacity-100 scale-100 duration-500 transition-all '
+                                        : 'opacity-0 scale-95 absolute pointer-events-none'
+                                }`}
                             >
-                                <p className={'font-medium text-lg ' + fugaz.className}>
-                                    {task.title}
-                                </p>
-                                <p className='text-sm'>{task.description}</p>
-                                <p className='text-xs'>{task.status}</p>
-                            </button>
-                        </div>
-                    ))
+                                <button
+                                    className={`p-4 text-indigo-500 rounded-lg duration-200 w-full ${
+                                        task.status === 'Done'
+                                            ? 'bg-green-50 greenShadow hover:bg-[lightgreen]'
+                                            : 'bg-indigo-50 purpleShadow hover:bg-[lavender]'
+                                    }`}
+                                    onClick={() => handleTaskClick(task)}
+                                >
+                                    <p className={'font-medium text-lg ' + fugaz.className}>{task.title}</p>
+                                    <p className="text-sm">{task.description}</p>
+                                    <p className="text-xs">{task.status}</p>
+                                </button>
+                            </div>
+                        );
+                    })
                 ) : (
-                    <div className='text-center text-indigo-500 text-2xl sm:text-3xl md:text-4xl w-full'>
+                    <div className="text-center text-indigo-500 text-2xl sm:text-3xl md:text-4xl w-full">
                         <p className={fugaz.className}>Nothing to do</p>
                     </div>
                 )}

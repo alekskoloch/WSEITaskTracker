@@ -16,3 +16,12 @@
     transform: translateX(3px, 3px);
     box-shadow: 0px 0px 1px 1px lavender;
 }
+
+.greenShadow {
+  box-shadow: 3px 3px 1px 1px lightgreen;
+}
+
+.greenShadow:hover {
+  transform: translateX(3px, 3px);
+  box-shadow: 0px 0px 1px 1px lightgreen;
+}
