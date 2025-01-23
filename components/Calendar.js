@@ -52,8 +52,6 @@ export default function Calendar({ completeData }) {
         });
     }
 
-    
-
     function handleIncrementMonth(val) {
         if (numericMonth + val < 0) {
             setSelectedYear(curr => curr - 1);

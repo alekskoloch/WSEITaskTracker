@@ -3,7 +3,7 @@ import { Fugaz_One } from 'next/font/google';
 import React, { useEffect, useState } from 'react';
 import Calendar from './Calendar';
 import { useAuth } from '@/context/AuthContext';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc , setDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import Loading from './Loading';
 import Login from './Login';
@@ -14,6 +14,8 @@ export default function Dashboard() {
     const { currentUser, loading } = useAuth();
     const [tasks, setTasks] = useState(null);
     const [userDataObj, setUserDataObj] = useState({});
+    const [taskModalVisible, setTaskModalVisible] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
     const now = new Date();
     const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
 
@@ -39,6 +41,41 @@ export default function Dashboard() {
 
         fetchTasks();
     }, [currentUser, todayKey]);
+
+    const handleTaskClick = (task) => {
+        setSelectedTask(task);
+        setTaskModalVisible(true);
+    };
+
+    const closeTaskModal = () => {
+        setTaskModalVisible(false);
+        setSelectedTask(null);
+    };
+
+    const updateTaskStatus = async (status) => {
+        if (!selectedTask || !currentUser) return;
+    
+        try {
+            const updatedTasks = tasks.map((task) =>
+                task.title === selectedTask.title ? { ...task, status } : task
+            );
+            setTasks(updatedTasks);
+    
+            const userDoc = doc(db, "users", currentUser.uid);
+            const updatedData = {
+                ...userDataObj,
+                tasks: {
+                    ...userDataObj.tasks,
+                    [todayKey]: updatedTasks,
+                },
+            };
+            await setDoc(userDoc, updatedData);
+    
+            closeTaskModal();
+        } catch (error) {
+            console.error("Error updating task status: ", error);
+        }
+    };
 
     if (loading) {
         return <Loading />;
@@ -72,6 +109,7 @@ export default function Dashboard() {
                         <div key={index} className='flex justify-center w-full sm:w-auto max-w-[300px]'>
                             <button
                                 className='p-4 bg-indigo-50 text-indigo-500 rounded-lg purpleShadow duration-200 hover:bg-[lavender] w-full'
+                                onClick={() => handleTaskClick(task)}
                             >
                                 <p className={'font-medium text-lg ' + fugaz.className}>
                                     {task.title}
@@ -89,6 +127,41 @@ export default function Dashboard() {
             </div>
 
             <Calendar completeData={userDataObj} handleSetTasks={() => {}} />
+
+            {taskModalVisible && selectedTask && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md text-center">
+                        <h2 className={"text-2xl font-bold mb-4 text-indigo-600 " + fugaz.className}>
+                            Task Details
+                        </h2>
+                        <p className={"text-lg font-semibold mb-2 " + fugaz.className}>
+                            {selectedTask.title}
+                        </p>
+                        <p className="text-sm mb-4">{selectedTask.description}</p>
+                        <div className="flex justify-center gap-2 mb-4">
+                            {['To Do', 'In Progress', 'Done'].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => updateTaskStatus(status)}
+                                    className={`px-4 py-2 rounded ${
+                                        status === selectedTask.status
+                                            ? 'bg-indigo-500 text-white'
+                                            : 'bg-indigo-100 text-indigo-500'
+                                    }`}
+                                >
+                                    {status}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            className="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-red-400 duration-200"
+                            onClick={closeTaskModal}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
