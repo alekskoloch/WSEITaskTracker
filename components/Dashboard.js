@@ -94,6 +94,36 @@ export default function Dashboard() {
         setSelectedTask(null);
     };
 
+    const deleteTask = async () => {
+        if (!selectedTask || !currentUser) return;
+
+        try {
+            const userDoc = doc(db, 'users', currentUser.uid);
+            const userData = (await getDoc(userDoc)).data();
+
+            const formattedDate = formatDateForKey(currentDate);
+            const updatedTasks = userData?.tasks?.[formattedDate]?.filter(
+                (task) => task.title !== selectedTask.title
+            ) || [];
+
+            const updatedData = {
+                ...userData,
+                tasks: {
+                    ...userData.tasks,
+                    [formattedDate]: updatedTasks,
+                },
+            };
+
+            await setDoc(userDoc, updatedData);
+
+            setTasks(updatedTasks);
+
+            closeTaskModal();
+        } catch (error) {
+            console.error('Error deleting task: ', error);
+        }
+    };
+
     const updateTaskStatus = async (status) => {
         if (!selectedTask || !currentUser) return;
     
@@ -265,10 +295,16 @@ export default function Dashboard() {
                             ))}
                         </div>
                         <button
-                            className="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-red-400 duration-200"
+                            className="mt-4 m-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-red-400 duration-200"
                             onClick={closeTaskModal}
                         >
                             Close
+                        </button>
+                        <button
+                            className="mt-4 m-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 duration-200"
+                            onClick={deleteTask}
+                        >
+                            Delete Task
                         </button>
                     </div>
                 </div>
